@@ -1,0 +1,15 @@
+
+- Login with this site issues two cookies
+     - auth cookie for the site itself (aspnet identity cookie)
+     - auth cookie for mod_auth_pubtkt (or similiar)
+- Needs to support
+    - Login with aspnet identity
+    - Issue mod_auth_pubtkt
+    - Issue something for nginx?
+    - Validate mod_auth_pubtkt tickets
+    - Configuration for pubtkt private key
+        - strip -- BEGIN -- and -- END -- from pem file
+    - MySQL Support
+    - Multi-Factor auth via TOTP/HOTP
+    - Multi-Factor auth via text
+    - Custom IUserStore / IRoleStore support (for existing Mirkweb db)
