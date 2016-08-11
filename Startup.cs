@@ -60,8 +60,8 @@ namespace WebApplication
                 x.TokensClaim = section["tokensClaim"];
                 x.UDataClaim = section["udataClaim"];
                 x.ClientIpSource = section["clientIpSource"];
-                x.ValidSeconds = string.IsNullOrEmpty(section["validSeconds"]) ? 30 * 60 : int.Parse(section["validSeconds"]);
-                x.GraceSeconds = string.IsNullOrEmpty(section["graceSeconds"]) ? 5 * 60 : int.Parse(section["graceSeconds"]);
+                x.ValidMinutes = string.IsNullOrEmpty(section["validMinutes"]) ? 30 * 60 : int.Parse(section["validMinutes"]);
+                x.GraceMinutes = string.IsNullOrEmpty(section["graceMinutes"]) ? 5 * 60 : int.Parse(section["graceMinutes"]);
                 x.FakeBasicKey = section["FakeBasicKey"];
                 x.FakeBasicWithRealPassword = string.IsNullOrEmpty(section["fakeBasicWithRealPassword"]) ? false : bool.Parse(section["fakeBasicWithRealPassword"]);
                 x.CookieDomain = section["cookieDomain"];

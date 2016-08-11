@@ -50,7 +50,7 @@ namespace WebApplication.Services
             string cip = null;
             IEnumerable<string> tokens = null;
             string udata = null;
-            DateTimeOffset expires = DateTimeOffset.UtcNow.AddMinutes(_options.ValidSeconds);
+            DateTimeOffset expires = DateTimeOffset.UtcNow.AddMinutes(_options.ValidMinutes);
 
             if (string.IsNullOrEmpty(_options.UidClaim))
             {
@@ -80,7 +80,7 @@ namespace WebApplication.Services
             }
 
             ticket = _signer.Sign(uid, expires, 
-                gracePeriod: TimeSpan.FromSeconds(_options.GraceSeconds),
+                gracePeriod: TimeSpan.FromMinutes(_options.GraceMinutes),
                 cip: cip,
                 tokens: tokens,
                 udata: udata,

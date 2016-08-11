@@ -20,9 +20,9 @@ namespace Webapplication1
 
         public string ClientIpSource { get; set; }
 
-        public int ValidSeconds { get; set; }
+        public int ValidMinutes { get; set; }
 
-        public int GraceSeconds { get; set; }
+        public int GraceMinutes { get; set; }
 
         public string FakeBasicKey { get; set; }
 

@@ -13,7 +13,7 @@ namespace WebApplication.Services
 {
     public class ModAuthPubTktAlgorithm : IDisposable
     {
-        private static readonly DateTime UNIX_EPOCH = new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTimeOffset UNIX_EPOCH = new DateTimeOffset(1970, 01, 01, 0, 0, 0, TimeSpan.Zero);
 
         protected readonly X509Certificate2 _cert;
 
@@ -22,12 +22,12 @@ namespace WebApplication.Services
             this.HashAlgorithmName = HashAlgorithmName.SHA1;
         }
 
-        public ModAuthPubTktAlgorithm(string certificateFile, string password)
+        public ModAuthPubTktAlgorithm(string certificateFile, string password) : this()
         {            
             _cert = new X509Certificate2(certificateFile, password, X509KeyStorageFlags.Exportable);
         }
 
-        public ModAuthPubTktAlgorithm(byte[] certificate, string password)
+        public ModAuthPubTktAlgorithm(byte[] certificate, string password) : this()
         {            
             _cert = new X509Certificate2(certificate, password, X509KeyStorageFlags.Exportable);
         }
@@ -70,7 +70,7 @@ namespace WebApplication.Services
 
             if (gracePeriod.HasValue && gracePeriod.Value > TimeSpan.Zero)
             {
-                ticketElements.Add("graceperiod", gracePeriod.Value.TotalSeconds.ToString("0"));
+                ticketElements.Add("graceperiod", expires.Subtract(gracePeriod.Value).Subtract(UNIX_EPOCH).TotalSeconds.ToString("0"));
             }
 
             if (cip != null)
