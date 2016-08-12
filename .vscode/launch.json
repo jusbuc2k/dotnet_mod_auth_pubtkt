@@ -6,9 +6,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/bin/Debug/netcoreapp1.0/pubtkt_login.dll",
+            "program": "${workspaceRoot}/src/Website/bin/Debug/netcoreapp1.0/pubtkt_login.dll",
             "args": [],
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}/src/Website/",
             "stopAtEntry": false,
             "launchBrowser": {
                 "enabled": true,
@@ -28,7 +28,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceRoot}/Views"
+                "/Views": "${workspaceRoot}/src/Website/Views"
             }
         },
         {

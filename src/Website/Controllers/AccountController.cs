@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using WebApplication.Models;
 using WebApplication.Models.AccountViewModels;
 using WebApplication.Services;
+using Justin.AspNetCore.ModAuthPubTkt;
 
 namespace WebApplication.Controllers
 {

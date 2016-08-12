@@ -25,9 +25,11 @@ bld/
 # Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
-wwwroot/lib/
-wwwroot/css/*.min.css
-wwwroot/js/*.min.js
+src/Website/wwwroot/lib/
+src/Website/wwwroot/css/*.min.css
+src/Website/wwwroot/js/*.min.js
+bin/
+obj/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System;
 using Microsoft.Extensions.Options;
-using Webapplication1;
 using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
 
-namespace WebApplication.Services
+namespace Justin.AspNetCore.ModAuthPubTkt
 {
     public class ModAuthPubTktAuthTokenService : IAuthTokenService, IDisposable
     {

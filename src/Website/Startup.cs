@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Services;
-using Webapplication1;
+using Justin.AspNetCore.ModAuthPubTkt;
 
 namespace WebApplication
 {
@@ -33,6 +33,9 @@ namespace WebApplication
             }
 
             builder.AddEnvironmentVariables();
+
+            
+
             Configuration = builder.Build();
         }
 
@@ -51,24 +54,7 @@ namespace WebApplication
 
             services.AddOptions();
 
-            services.Configure<ModAuthPubTktOptions>(x => {
-                var section = Configuration.GetSection("mod_auth_pubtkt");
-                x.KeyFile = section["keyFile"];
-                x.KeyPassword = section["keyPassword"];
-                x.CookieName = section["cookieName"];
-                x.UidClaim = section["uidClaim"];
-                x.TokensClaim = section["tokensClaim"];
-                x.UDataClaim = section["udataClaim"];
-                x.ClientIpSource = section["clientIpSource"];
-                x.ValidMinutes = string.IsNullOrEmpty(section["validMinutes"]) ? 30 * 60 : int.Parse(section["validMinutes"]);
-                x.GraceMinutes = string.IsNullOrEmpty(section["graceMinutes"]) ? 5 * 60 : int.Parse(section["graceMinutes"]);
-                x.FakeBasicKey = section["FakeBasicKey"];
-                x.FakeBasicWithRealPassword = string.IsNullOrEmpty(section["fakeBasicWithRealPassword"]) ? false : bool.Parse(section["fakeBasicWithRealPassword"]);
-                x.CookieDomain = section["cookieDomain"];
-                x.CookieSecure = string.IsNullOrEmpty(section["cookieSecure"]) ? true : bool.Parse(section["cookieSecure"]);
-            });
-
-            services.AddTransient<IAuthTokenService, ModAuthPubTktAuthTokenService>();
+            services.AddModAuthPubTktTokenService(this.Configuration.GetSection("mod_auth_pubtkt"));
 
             services.AddMvc();
 
@@ -94,8 +80,10 @@ namespace WebApplication
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseModAuthPubTkt();
 
+            app.UseStaticFiles();
+            
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715

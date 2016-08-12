@@ -3,17 +3,16 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System;
 using Microsoft.Extensions.Options;
-using Webapplication1;
 using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
 
-namespace WebApplication.Services
+namespace Justin.AspNetCore.ModAuthPubTkt
 {
     public class ModAuthPubTktAlgorithm : IDisposable
     {
-        private static readonly DateTimeOffset UNIX_EPOCH = new DateTimeOffset(1970, 01, 01, 0, 0, 0, TimeSpan.Zero);
+        public static readonly DateTimeOffset UNIX_EPOCH = new DateTimeOffset(1970, 01, 01, 0, 0, 0, TimeSpan.Zero);
 
         protected readonly X509Certificate2 _cert;
 
@@ -37,12 +36,11 @@ namespace WebApplication.Services
         public bool Verify(string ticket)
         {
             var rsa = _cert.GetRSAPublicKey();
-            var elements = ticket.Split(';');
-            var signedElements = string.Join(";", elements.Take(elements.Length-1));
-            var signature = elements.Last();
+            var idx = ticket.IndexOf(";sig=");
+            var pair = new string[]{ ticket.Substring(0, idx), ticket.Substring(idx+5) };
 
-            byte[] bsignature = Convert.FromBase64String(signature.Substring(4));
-            byte[] bdata = System.Text.UTF8Encoding.UTF8.GetBytes(signedElements);
+            byte[] bsignature = Convert.FromBase64String(pair[1]);
+            byte[] bdata = System.Text.UTF8Encoding.UTF8.GetBytes(pair[0]);
 
             return rsa.VerifyData(bdata, bsignature, this.HashAlgorithmName, RSASignaturePadding.Pkcs1);
         }

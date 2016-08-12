@@ -1,7 +1,6 @@
 using System;
-using Microsoft.Extensions.Options;
 
-namespace Webapplication1
+namespace Justin.AspNetCore.ModAuthPubTkt
 {
 
     public class ModAuthPubTktOptions
