@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
+using Justin.ModAuthPubTkt;
 
 namespace Justin.AspNetCore.ModAuthPubTkt
 {
@@ -19,9 +20,9 @@ namespace Justin.AspNetCore.ModAuthPubTkt
 
         protected readonly ModAuthPubTktAlgorithm _signer;
 
-        protected readonly ModAuthPubTktOptions _options;
+        protected readonly ModAuthPubTktTokenServiceOptions _options;
 
-        public ModAuthPubTktAuthTokenService(IOptions<ModAuthPubTktOptions> options)
+        public ModAuthPubTktAuthTokenService(IOptions<ModAuthPubTktTokenServiceOptions> options)
         {            
             _options = options.Value;
             _signer = new ModAuthPubTktAlgorithm(options.Value.KeyFile, options.Value.KeyPassword);

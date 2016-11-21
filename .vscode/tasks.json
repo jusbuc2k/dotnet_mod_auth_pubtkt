@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/src/Website/project.json"
+                "${workspaceRoot}/src/LoginUI/project.json"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"

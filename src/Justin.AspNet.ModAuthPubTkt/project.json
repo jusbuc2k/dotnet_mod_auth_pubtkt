@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Justin.ModAuthPubTkt": "1.0.0-*",
+    "Microsoft.AspNet.Mvc": "5.0.2"
+  },
+
+  "frameworks": {
+    "net461": {
+      "dependencies": {
+      },
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0",
+        "System.Runtime.Caching": "4.0.0.0",
+        "System.Web": "4.0.0.0"
+      }
+    }
+  }
+}
