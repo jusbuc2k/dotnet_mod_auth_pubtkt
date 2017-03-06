@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Justin.ModAuthPubTkt
 {
-    public struct ModAuthPubTkt
+    public class ModAuthPubTkt
     {
         #region Privates
 
@@ -16,6 +16,12 @@ namespace Justin.ModAuthPubTkt
         #endregion
 
         #region Constructor
+
+        public ModAuthPubTkt()
+        {
+            _value = string.Empty;
+            _parsed = new Dictionary<string, string>();
+        }
 
         public ModAuthPubTkt(string value)
         {
@@ -30,7 +36,7 @@ namespace Justin.ModAuthPubTkt
         private string GetValue(string key, string defaultValue)
         {
             string s;
-            if (_parsed.TryGetValue("uid", out s))
+            if (_parsed.TryGetValue(key, out s))
             {
                 return s;
             }
@@ -40,15 +46,43 @@ namespace Justin.ModAuthPubTkt
             }
         }
 
+        private void SetValue(string key, string value)
+        {
+            if (value == null && _parsed.ContainsKey(key))
+            {
+                _parsed.Remove(key);
+            }
+            else
+            {
+                _parsed[key] = value;
+            }            
+        }
+
         #endregion
 
         #region Properties
 
-        public string UserID 
+        public string UserName
         {
             get
             {
                return GetValue("uid", null);
+            }
+            set
+            {
+                SetValue("uid", value);
+            }
+        }
+
+        public string UserIdentifier
+        {
+            get
+            {
+                return GetValue("u", null);
+            }
+            set
+            {
+                SetValue("u", value);
             }
         }
 
@@ -56,9 +90,13 @@ namespace Justin.ModAuthPubTkt
         {
             get
             {
-                long val = long.Parse(GetValue("validuntil", "0"));
+                long val = long.Parse(GetValue(nameof(ValidUntil).ToLowerInvariant(), "0"));
 
                 return ModAuthPubTktAlgorithm.UNIX_EPOCH.AddSeconds(val);
+            }
+            set
+            {
+                SetValue(nameof(ValidUntil).ToLowerInvariant(), value.Subtract(ModAuthPubTktAlgorithm.UNIX_EPOCH).TotalSeconds.ToString("0"));
             }
         }
 
@@ -69,7 +107,7 @@ namespace Justin.ModAuthPubTkt
         {
             get
             {
-                long val = long.Parse(GetValue("graceperiod", "0"));
+                long val = long.Parse(GetValue(nameof(GracePeriod).ToLowerInvariant(), "0"));
 
                 if (val == 0)
                 {
@@ -77,6 +115,17 @@ namespace Justin.ModAuthPubTkt
                 }
 
                 return ModAuthPubTktAlgorithm.UNIX_EPOCH.AddSeconds(val);
+            }
+            set
+            {
+                if (value.HasValue)
+                {
+                    SetValue(nameof(GracePeriod).ToLowerInvariant(), value.Value.Subtract(ModAuthPubTktAlgorithm.UNIX_EPOCH).TotalSeconds.ToString("0"));
+                }
+                else
+                {
+                    SetValue(nameof(GracePeriod).ToLowerInvariant(), null);
+                }
             }
         }
 
@@ -87,7 +136,7 @@ namespace Justin.ModAuthPubTkt
         {
             get
             {
-                long val = long.Parse(GetValue("issued", "0"));
+                long val = long.Parse(GetValue(nameof(Issued).ToLowerInvariant(), "0"));
 
                 if (val == 0)
                 {
@@ -95,6 +144,17 @@ namespace Justin.ModAuthPubTkt
                 }
 
                 return ModAuthPubTktAlgorithm.UNIX_EPOCH.AddSeconds(val);
+            }
+            set
+            {
+                if (value.HasValue)
+                {
+                    SetValue(nameof(Issued).ToLowerInvariant(), value.Value.Subtract(ModAuthPubTktAlgorithm.UNIX_EPOCH).TotalSeconds.ToString("0"));
+                }
+                else
+                {
+                    SetValue(nameof(Issued).ToLowerInvariant(), null);
+                }
             }
         }
 
@@ -104,13 +164,17 @@ namespace Justin.ModAuthPubTkt
             {
                 return GetValue("cip", null);
             }
+            set
+            {
+                SetValue("cip", value);
+            }
         }
 
         public IEnumerable<string> Tokens
         {
             get
             {
-                var val = GetValue("tokens", null);
+                var val = GetValue(nameof(Tokens).ToLowerInvariant(), null);
 
                 if (val == null)
                 {
@@ -118,6 +182,17 @@ namespace Justin.ModAuthPubTkt
                 }
 
                 return val.Split(',');
+            }
+            set
+            {
+                if (value == null)
+                {
+                    SetValue(nameof(Tokens).ToLowerInvariant(), null);
+                }
+                else
+                {
+                    SetValue(nameof(Tokens).ToLowerInvariant(), string.Join(",", value));
+                }
             }
         }
 
@@ -127,6 +202,10 @@ namespace Justin.ModAuthPubTkt
             {
                 return GetValue("udata", null);
             }
+            set
+            {
+                SetValue("udata", null);
+            }
         }
 
         public string BasicAuth
@@ -134,6 +213,10 @@ namespace Justin.ModAuthPubTkt
             get
             {
                 return GetValue("bauth", null);
+            }
+            set
+            {
+                SetValue("bauth", null);
             }
         }
 
@@ -152,6 +235,10 @@ namespace Justin.ModAuthPubTkt
                 }
 
                 return Convert.FromBase64String(sig);
+            }
+            set
+            {
+                SetValue("sig", Convert.ToBase64String(value));
             }
         }
 
@@ -173,29 +260,46 @@ namespace Justin.ModAuthPubTkt
             return new Dictionary<string, string>(_parsed);
         }
 
+        public void AddValue(string key, string value)
+        {
+            this._parsed.Add(key, value);
+        }
+
+        public bool TryGetValue(string key, out string value)
+        {
+            return _parsed.TryGetValue(key, out value);
+        }
+
         public System.Security.Claims.ClaimsIdentity CreateIdentity(string uidClaim, string tokensClaim = ClaimTypes.Role, string udataClaim = null, string authenticationMethod = "mod_auth_pubtkt")
         {
-            var identity = new System.Security.Claims.ClaimsIdentity();
-
-            identity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, authenticationMethod));
-            identity.AddClaim(new Claim(ClaimTypes.Name, this.UserID));
+            string atype;
+            var claims = new List<Claim>();
+            
+            claims.Add(new Claim(ClaimTypes.Name, this.UserName));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, this.UserIdentifier ?? this.UserName));
 
             if (uidClaim != ClaimTypes.Name)
             {
-                identity.AddClaim(new Claim(uidClaim, this.UserID));
+                claims.Add(new Claim(uidClaim, this.UserName));
             }
 
             if (this.Tokens != null)
             {
-                identity.AddClaims(this.Tokens.Select(s => new Claim(tokensClaim, s)));
+                claims.AddRange(this.Tokens.Select(s => new Claim(tokensClaim, s)));
             }
 
             if (this.UserData != null && udataClaim != null)
             {
-                identity.AddClaim(new Claim(udataClaim, this.UserData));
+                claims.Add(new Claim(udataClaim, this.UserData));
             }
 
-            return identity;
+            atype = claims.Where(x => x.Type == ClaimTypes.AuthenticationMethod).Select(s => s.Value).FirstOrDefault();
+            if (atype == null)
+            {
+                atype = this.GetValue("atype", authenticationMethod);
+            }
+
+            return new System.Security.Claims.ClaimsIdentity(claims, authenticationMethod);
         }
 
         #endregion

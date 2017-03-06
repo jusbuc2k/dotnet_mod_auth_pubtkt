@@ -48,7 +48,7 @@ namespace Justin.ModAuthPubTkt
         {
             var ticketString = new StringBuilder();
             var rsa = _cert.GetRSAPrivateKey();
-            ticketString.Append(string.Join(";", elements.Select(s => string.Concat(s.Key, "=", s.Value))));
+            ticketString.Append(string.Join(";", elements.Where(x => x.Key != "sig").Select(s => string.Concat(s.Key, "=", s.Value))));
 
             var sbytes = System.Text.UTF8Encoding.UTF8.GetBytes(ticketString.ToString());
             var hash = rsa.SignData(sbytes, this.HashAlgorithmName, RSASignaturePadding.Pkcs1);
@@ -58,40 +58,9 @@ namespace Justin.ModAuthPubTkt
             return ticketString.ToString();
         }
 
-        public string Sign(string uid, DateTimeOffset expires, TimeSpan? gracePeriod = null, string cip = null, IEnumerable<string> tokens = null, string udata = null, string bauth = null)
+        public string Sign(ModAuthPubTkt tkt)
         {
-            var ticketString = new StringBuilder();
-            var ticketElements = new Dictionary<string, string>();
-
-            ticketElements.Add("uid", uid);
-            ticketElements.Add("validuntil", expires.Subtract(UNIX_EPOCH).TotalSeconds.ToString("0"));
-
-            if (gracePeriod.HasValue && gracePeriod.Value > TimeSpan.Zero)
-            {
-                ticketElements.Add("graceperiod", expires.Subtract(gracePeriod.Value).Subtract(UNIX_EPOCH).TotalSeconds.ToString("0"));
-            }
-
-            if (cip != null)
-            {
-                ticketElements.Add("cip", cip);
-            }
-
-            if (tokens != null)
-            {
-                ticketElements.Add("tokens", string.Join(",", tokens));
-            }
-
-            if (udata != null)
-            {
-                ticketElements.Add("udata", udata);
-            }          
-            
-            if (bauth != null)
-            {
-                ticketElements.Add("bauth", bauth);
-            }
-
-            return Sign(ticketElements);
+            return Sign(tkt.GetElements());
         }
 
         public void Dispose()

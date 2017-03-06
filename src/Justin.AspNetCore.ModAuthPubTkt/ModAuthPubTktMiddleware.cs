@@ -19,13 +19,13 @@ namespace Justin.AspNetCore.ModAuthPubTkt
             ILoggerFactory loggerFactory, 
             System.Text.Encodings.Web.UrlEncoder encoder,
             Microsoft.Extensions.Caching.Memory.IMemoryCache cache) : base(next, options, loggerFactory, encoder)
-        {
+        {            
             _logger = loggerFactory.CreateLogger<ModAuthPubTktMiddleware>();
         }
-
+                
         protected override AuthenticationHandler<ModAuthPubTktAuthenticationOptions> CreateHandler()
         {
-            return new ModAuthPubTktAuthenticationHandler();       
+            return new ModAuthPubTktAuthenticationHandler();
         }
     }
 }

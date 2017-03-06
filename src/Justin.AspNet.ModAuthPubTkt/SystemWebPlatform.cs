@@ -17,9 +17,10 @@ namespace Justin.AspNet.ModAuthPubTkt
             _cache = cache;
         }
 
-        public void Redirect(string url)
+        public void SetResponseStatus(int statusCode, string status)
         {
-            _context.Response.Redirect(url);
+            _context.Response.Status = status;
+            _context.Response.StatusCode = statusCode;
         }
 
         public void SetCacheEntry<T>(string cacheKey, T cacheEntry, DateTimeOffset expires)

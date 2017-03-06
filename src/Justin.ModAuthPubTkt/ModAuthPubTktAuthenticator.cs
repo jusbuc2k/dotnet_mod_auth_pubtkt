@@ -9,19 +9,19 @@ namespace Justin.ModAuthPubTkt
     public class ModAuthPubTktAuthenticator : IDisposable
     {
         private readonly IPlatformAbstraction _platform;
-        private readonly ModAuthPubTktAuthenticatorOptions _options;
+        private readonly ModAuthPubTktSignInOptions _options;
         private readonly Justin.ModAuthPubTkt.ModAuthPubTktAlgorithm _signer;
 
-        public ModAuthPubTktAuthenticator(ModAuthPubTktAuthenticatorOptions options, IPlatformAbstraction platform)
+        public ModAuthPubTktAuthenticator(ModAuthPubTktSignInOptions options, IPlatformAbstraction platform)
         {
             _options = options;
             _platform = platform;
             _signer = new ModAuthPubTktAlgorithm(options.KeyFile, options.KeyPassword);
         }
 
-        public bool Authenticate()
+        public bool Authenticate(bool automaticChallenge = true)
         {
-            Justin.ModAuthPubTkt.ModAuthPubTkt? ticket = null;
+            Justin.ModAuthPubTkt.ModAuthPubTkt ticket = null;
             string cookieValue;        
 
             if (!_platform.TryGetCookie(_options.CookieName, out cookieValue))
@@ -34,7 +34,7 @@ namespace Justin.ModAuthPubTkt
                 return false;
             }
             
-            if (_platform.TryGetCacheEntry<Justin.ModAuthPubTkt.ModAuthPubTkt?>(cookieValue, out ticket))
+            if (_platform.TryGetCacheEntry<Justin.ModAuthPubTkt.ModAuthPubTkt>(cookieValue, out ticket))
             {
                 // ticket was cached
             }
@@ -47,20 +47,23 @@ namespace Justin.ModAuthPubTkt
                 return false;
             }
 
-            if (ticket.Value.ValidUntil < DateTimeOffset.UtcNow)
+            if (ticket.ValidUntil < DateTimeOffset.UtcNow)
             {
                 _platform.SetCacheEntry<object>(cookieValue, null, DateTimeOffset.MinValue);
                 return false;
             }
 
-            if (ticket.Value.GracePeriod.HasValue && ticket.Value.GracePeriod.Value < DateTimeOffset.UtcNow)
+            if (ticket.GracePeriod.HasValue && ticket.GracePeriod.Value < DateTimeOffset.UtcNow)
             {
-                _platform.Redirect(_options.LoginUrl);
+                if (automaticChallenge)
+                {
+                    _platform.SetResponseStatus(401, "Unauthorized");
+                }
             }
 
             _platform.SetCacheEntry(cookieValue, ticket, DateTimeOffset.Now.AddSeconds(_options.CacheDuration));
 
-            _platform.SetPrincipal(new System.Security.Claims.ClaimsPrincipal(ticket.Value.CreateIdentity(_options.UidClaim,
+            _platform.SetPrincipal(new System.Security.Claims.ClaimsPrincipal(ticket.CreateIdentity(_options.UserNameClaim,
                 tokensClaim: _options.TokensClaim,
                 udataClaim: _options.UDataClaim    
             )));

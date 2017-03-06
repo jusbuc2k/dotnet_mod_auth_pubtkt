@@ -19,13 +19,18 @@ namespace Justin.AspNetCore.ModAuthPubTkt
 
         public System.Security.Claims.ClaimsPrincipal User { get; set; }
 
-        public void Redirect(string url)
+        public void SetResponseStatus(int statusCode, string status)
         {
-            throw new NotImplementedException();
+            _context.Response.StatusCode = statusCode;
         }
 
         public void SetCacheEntry<T>(string cacheKey, T cacheEntry, DateTimeOffset expires)
         {
+            if (_cache == null)
+            {
+                return;
+            }
+
             var cacheItem = _cache.CreateEntry(cacheKey);
             cacheItem.Value = cacheEntry;
             cacheItem.AbsoluteExpiration = expires;
@@ -53,6 +58,11 @@ namespace Justin.AspNetCore.ModAuthPubTkt
         {
             cacheEntry = default(T);
             object cacheItem;
+
+            if (_cache == null)
+            {
+                return false;
+            }
 
             if(_cache.TryGetValue(cacheKey, out cacheItem))
             {

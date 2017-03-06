@@ -4,24 +4,18 @@ namespace Justin.ModAuthPubTkt
 {
     public class ModAuthPubTktOptions
     {
-        public ModAuthPubTktOptions()
-        {
-            this.CookieName = "auth_pubtkt";
-            this.UidClaim = System.Security.Claims.ClaimTypes.Name;
-            this.TokensClaim = System.Security.Claims.ClaimTypes.Role;
-        }
-
         public string KeyFile { get; set; }
 
         public string KeyPassword { get;set; }
 
-        public string CookieName { get; set; }
+        public string CookieName { get; set; } = "auth_pubtkt";
 
-        public string UidClaim { get;set; }
+        public string UserNameClaim { get; set; } = System.Security.Claims.ClaimTypes.Name;
 
-        public string TokensClaim { get; set; }
-        
+        public string UserIdentifierClaim { get; set; } = System.Security.Claims.ClaimTypes.NameIdentifier;
+
+        public string TokensClaim { get; set; } = System.Security.Claims.ClaimTypes.Role;
+
         public string UDataClaim { get; set; }
-
     }
 }

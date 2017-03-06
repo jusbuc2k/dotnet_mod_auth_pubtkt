@@ -1,6 +1,7 @@
 {
     "projects":[
 		"LoginUI",
-        "Justin.AspNetCore.ModAuthPubTkt"
+      "Justin.AspNetCore.ModAuthPubTkt",
+      "src"
     ]
 }

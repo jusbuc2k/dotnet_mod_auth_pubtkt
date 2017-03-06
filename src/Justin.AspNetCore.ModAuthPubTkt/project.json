@@ -6,13 +6,14 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "Microsoft.AspNetCore.Http": "1.0.0",
-    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.AspNetCore.Http": "1.0.1",
+    "Microsoft.AspNetCore.Identity": "1.0.1",
+    "Microsoft.Extensions.Logging": "1.0.1",
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
     "Justin.ModAuthPubTkt": "1.0.0-*",
-    "Microsoft.AspNetCore.Authentication": "1.0.0"
+    "Microsoft.AspNetCore.Authentication": "1.0.1"
   },
 
   "frameworks": {

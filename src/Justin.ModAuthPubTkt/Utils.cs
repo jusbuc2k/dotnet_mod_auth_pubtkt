@@ -19,8 +19,8 @@ namespace Justin.ModAuthPubTkt
 
             foreach (var element in elements)
             {
-                pair = element.Split('=');
-                dictionary.Add(pair[0],pair[1]);
+                pair = element.Split(new char[] { '=' }, 2);
+                dictionary.Add(pair[0], pair[1]);
             }
 
             return dictionary;           

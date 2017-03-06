@@ -15,7 +15,7 @@ namespace Justin.ModAuthPubTkt.Abstractions
 
         void SetCacheEntry<T>(string cacheKey, T cacheEntry, DateTimeOffset expires);
 
-        void Redirect(string url);
+        void SetResponseStatus(int statusCode, string status);
 
         void SetPrincipal(System.Security.Claims.ClaimsPrincipal user);
     }
